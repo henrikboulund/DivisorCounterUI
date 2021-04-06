@@ -32,8 +32,12 @@ public class Controller {
     private ProgressBar progressBar;
 
     @FXML
+    private Label progressLabel;
+
+    @FXML
     public void initialize() {
         progressBar.setProgress(0.5);
+        progressLabel.setText("");
         resultLabel.setText("");
 
         startButton.setDisable(false);
