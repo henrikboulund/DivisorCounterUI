@@ -8,10 +8,12 @@ import sample.logic.Result;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Controller {
 
-    private DivisorCounter counterTask = new DivisorCounter();
+    private DivisorCounter counterTask;
+    private ExecutorService executorService = Executors.newFixedThreadPool(1);
 
     @FXML
     private Button startButton;
@@ -45,23 +47,6 @@ public class Controller {
 
         txtMinimum.setText("1");
         txtMaximum.setText("100000");
-
-        System.out.println(Thread.currentThread().getId());
-        counterTask.messageProperty().addListener((obs, oold, nnew) -> progressLabel.setText(nnew));
-        counterTask.progressProperty().addListener((obs, oold, nnew) -> progressBar.setProgress((double)nnew));
-        counterTask.setOnSucceeded(e -> {
-            try {
-                System.out.println(Thread.currentThread().getId());
-                Result result = counterTask.get();
-                resultLabel.setText("The number " + result.getNumber() + " has " + result.getDivisorCounter() + " divisors!");
-                startButton.setDisable(false);
-                stopButton.setDisable(true);
-            } catch (InterruptedException interruptedException) {
-                interruptedException.printStackTrace();
-            } catch (ExecutionException executionException) {
-                executionException.printStackTrace();
-            }
-        });
     }
 
     @FXML
@@ -73,20 +58,33 @@ public class Controller {
         startButton.setDisable(true);
         stopButton.setDisable(false);
         resultLabel.setText("");
+        txtMaximum.setDisable(true);
+        txtMinimum.setDisable(true);
 
+        counterTask = new DivisorCounter();
+        counterTask.messageProperty().addListener((obs, o, n) -> progressLabel.setText(n));
+        counterTask.progressProperty().addListener((obs, o, n) -> progressBar.setProgress((double)n));
+        counterTask.valueProperty().addListener((obs, o, n) -> resultLabel.setText("The number " + n.getNumber() + " has " + n.getDivisorCounter() + " divisors!"));
+        counterTask.setOnSucceeded(e -> {
+            startButton.setDisable(false);
+            stopButton.setDisable(true);
+        });
         counterTask.setMinimum(minimum);
         counterTask.setMaximum(maximum);
 
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
         executorService.submit(counterTask);
     }
 
     @FXML
-    public void stop() {
+    public void stop() throws InterruptedException {
+        counterTask.cancel();
+
         startButton.setDisable(false);
         stopButton.setDisable(true);
-
-        counterTask.cancel();
+        resultLabel.setText("");
+        progressBar.setProgress(0);
+        txtMaximum.setDisable(false);
+        txtMinimum.setDisable(false);
     }
 }
 

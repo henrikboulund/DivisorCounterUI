@@ -11,9 +11,6 @@ public class DivisorCounter extends Task<Result> {
     protected Result call() throws Exception {
         Result result = new Result(0, 0);
         for(int i = getMinimum(); i <= getMaximum(); i++) {
-            if(isCancelled()) {
-                return null;
-            }
 
             this.updateMessage("Counting divisors for " + i);
 
@@ -28,6 +25,7 @@ public class DivisorCounter extends Task<Result> {
             }
             if(counter > result.getDivisorCounter()) {
                 result = new Result(i, counter);
+                this.updateValue(result);
             }
 
             this.updateProgress(i, getMaximum());
