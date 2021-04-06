@@ -1,10 +1,7 @@
 package sample.ui;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.Spinner;
+import javafx.scene.control.*;
 import sample.logic.DivisorCounter;
 import sample.logic.Result;
 
@@ -24,10 +21,10 @@ public class Controller {
     private Label resultLabel;
 
     @FXML
-    private Spinner<Integer> minimumSpinner;
+    private TextField txtMinimum;
 
     @FXML
-    private Spinner<Integer> maximumSpinner;
+    private TextField txtMaximum;
 
     @FXML
     private ProgressBar progressBar;
@@ -40,14 +37,14 @@ public class Controller {
         startButton.setDisable(false);
         stopButton.setDisable(true);
 
-        minimumSpinner.setValueFactory(new DivisorSpinnerValueFactory(1));
-        maximumSpinner.setValueFactory(new DivisorSpinnerValueFactory(100000));
+        txtMinimum.setText("1");
+        txtMaximum.setText("100000");
     }
 
     @FXML
     public void start() {
-        Integer minimum = minimumSpinner.getValue();
-        Integer maximum = maximumSpinner.getValue();
+        Integer minimum = Integer.parseInt(txtMinimum.getText());
+        Integer maximum = Integer.parseInt(txtMaximum.getText());
 
         progressBar.setProgress(0);
         startButton.setDisable(true);
