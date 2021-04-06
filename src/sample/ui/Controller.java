@@ -8,6 +8,10 @@ import javafx.scene.control.Spinner;
 import sample.logic.DivisorCounter;
 import sample.logic.Result;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class Controller {
 
     @FXML
@@ -51,12 +55,27 @@ public class Controller {
         resultLabel.setText("");
 
         DivisorCounter counter = new DivisorCounter();
-        Result result = counter.calculate(minimum, maximum);
-        resultLabel.setText("The number " + result.getNumber() + " has " + result.getDivisorCounter() + " divisors!");
+        counter.setMinimum(minimum);
+        counter.setMaximum(maximum);
 
-        progressBar.setProgress(1);
-        startButton.setDisable(false);
-        stopButton.setDisable(true);
+        counter.messageProperty().addListener((obs, oold, nnew) -> resultLabel.setText(nnew));
+        counter.progressProperty().addListener((obs, oold, nnew) -> progressBar.setProgress((double)nnew));
+        counter.setOnSucceeded(e -> {
+            try {
+                Result result = counter.get();
+                resultLabel.setText("The number " + result.getNumber() + " has " + result.getDivisorCounter() + " divisors!");
+                startButton.setDisable(false);
+                stopButton.setDisable(true);
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            } catch (ExecutionException executionException) {
+                executionException.printStackTrace();
+            }
+
+        });
+
+        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        executorService.submit(counter);
     }
 }
 
