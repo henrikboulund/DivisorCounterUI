@@ -11,11 +11,17 @@ public class DivisorCounter extends Task<Result> {
     protected Result call() throws Exception {
         Result result = new Result(0, 0);
         for(int i = getMinimum(); i <= getMaximum(); i++) {
+            if(isCancelled()) {
+                return null;
+            }
 
             this.updateMessage("Counting divisors for " + i);
 
             int counter = 0;
             for(int j = 1; j<=i; j++) {
+                if (isCancelled()) {
+                    return null;
+                }
                 if(i % j == 0) {
                     counter++;
                 }

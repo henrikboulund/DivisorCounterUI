@@ -11,6 +11,8 @@ import java.util.concurrent.Executors;
 
 public class Controller {
 
+    private DivisorCounter counterTask = new DivisorCounter();
+
     @FXML
     private Button startButton;
 
@@ -39,6 +41,23 @@ public class Controller {
 
         txtMinimum.setText("1");
         txtMaximum.setText("100000");
+
+        System.out.println(Thread.currentThread().getId());
+        counterTask.messageProperty().addListener((obs, oold, nnew) -> resultLabel.setText(nnew));
+        counterTask.progressProperty().addListener((obs, oold, nnew) -> progressBar.setProgress((double)nnew));
+        counterTask.setOnSucceeded(e -> {
+            try {
+                System.out.println(Thread.currentThread().getId());
+                Result result = counterTask.get();
+                resultLabel.setText("The number " + result.getNumber() + " has " + result.getDivisorCounter() + " divisors!");
+                startButton.setDisable(false);
+                stopButton.setDisable(true);
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            } catch (ExecutionException executionException) {
+                executionException.printStackTrace();
+            }
+        });
     }
 
     @FXML
@@ -51,28 +70,19 @@ public class Controller {
         stopButton.setDisable(false);
         resultLabel.setText("");
 
-        DivisorCounter counter = new DivisorCounter();
-        counter.setMinimum(minimum);
-        counter.setMaximum(maximum);
-
-        counter.messageProperty().addListener((obs, oold, nnew) -> resultLabel.setText(nnew));
-        counter.progressProperty().addListener((obs, oold, nnew) -> progressBar.setProgress((double)nnew));
-        counter.setOnSucceeded(e -> {
-            try {
-                Result result = counter.get();
-                resultLabel.setText("The number " + result.getNumber() + " has " + result.getDivisorCounter() + " divisors!");
-                startButton.setDisable(false);
-                stopButton.setDisable(true);
-            } catch (InterruptedException interruptedException) {
-                interruptedException.printStackTrace();
-            } catch (ExecutionException executionException) {
-                executionException.printStackTrace();
-            }
-
-        });
+        counterTask.setMinimum(minimum);
+        counterTask.setMaximum(maximum);
 
         ExecutorService executorService = Executors.newFixedThreadPool(1);
-        executorService.submit(counter);
+        executorService.submit(counterTask);
+    }
+
+    @FXML
+    public void stop() {
+        startButton.setDisable(false);
+        stopButton.setDisable(true);
+
+        counterTask.cancel();
     }
 }
 
