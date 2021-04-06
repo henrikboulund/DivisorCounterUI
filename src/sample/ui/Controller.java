@@ -62,9 +62,9 @@ public class Controller {
         txtMinimum.setDisable(true);
 
         counterTask = new DivisorCounter();
-        counterTask.messageProperty().addListener((obs, o, n) -> progressLabel.setText(n));
-        counterTask.progressProperty().addListener((obs, o, n) -> progressBar.setProgress((double)n));
-        counterTask.valueProperty().addListener((obs, o, n) -> resultLabel.setText("The number " + n.getNumber() + " has " + n.getDivisorCounter() + " divisors!"));
+        counterTask.setUpdateLabel(progressLabel);
+        counterTask.setResultLabel(resultLabel);
+        counterTask.setProgressBar(progressBar);
         counterTask.setOnSucceeded(e -> {
             startButton.setDisable(false);
             stopButton.setDisable(true);
