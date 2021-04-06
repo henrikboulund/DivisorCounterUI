@@ -47,7 +47,7 @@ public class Controller {
         txtMaximum.setText("100000");
 
         System.out.println(Thread.currentThread().getId());
-        counterTask.messageProperty().addListener((obs, oold, nnew) -> resultLabel.setText(nnew));
+        counterTask.messageProperty().addListener((obs, oold, nnew) -> progressLabel.setText(nnew));
         counterTask.progressProperty().addListener((obs, oold, nnew) -> progressBar.setProgress((double)nnew));
         counterTask.setOnSucceeded(e -> {
             try {
