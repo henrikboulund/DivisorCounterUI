@@ -1,10 +1,12 @@
-package sample;
+package sample.ui;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Spinner;
+import sample.logic.DivisorCounter;
+import sample.logic.Result;
 
 public class Controller {
 
@@ -43,6 +45,7 @@ public class Controller {
         Integer minimum = minimumSpinner.getValue();
         Integer maximum = maximumSpinner.getValue();
 
+        progressBar.setProgress(0);
         startButton.setDisable(true);
         stopButton.setDisable(false);
         resultLabel.setText("");
@@ -51,6 +54,7 @@ public class Controller {
         Result result = counter.calculate(minimum, maximum);
         resultLabel.setText("The number " + result.getNumber() + " has " + result.getDivisorCounter() + " divisors!");
 
+        progressBar.setProgress(1);
         startButton.setDisable(false);
         stopButton.setDisable(true);
     }

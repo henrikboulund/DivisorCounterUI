@@ -1,9 +1,6 @@
-package sample;
-
-import java.util.Vector;
+package sample.logic;
 
 public class DivisorCounter {
-    private final static Vector<Result> results = new Vector<>();
 
     public Result calculate(int minimum, int maximum) {
         Result result = new Result(0, 0);
@@ -19,7 +16,7 @@ public class DivisorCounter {
             }
         }
 
-        results.add(result);
         return result;
     }
+
 }

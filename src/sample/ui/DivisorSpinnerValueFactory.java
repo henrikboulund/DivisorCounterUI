@@ -1,4 +1,4 @@
-package sample;
+package sample.ui;
 
 import javafx.scene.control.SpinnerValueFactory;
 

@@ -10,9 +10,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("ui/sample.fxml"));
         primaryStage.setTitle("Divisor counter");
-        primaryStage.setScene(new Scene(root, 450, 200));
+        primaryStage.setScene(new Scene(root, 500, 200));
         primaryStage.show();
     }
 
