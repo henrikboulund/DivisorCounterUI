@@ -1,12 +1,19 @@
 package sample.ui;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import sample.logic.DivisorCounter;
 import sample.logic.Result;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 public class Controller {
 
+    private DivisorCounter counter;
     @FXML
     private Button startButton;
 
@@ -51,13 +58,52 @@ public class Controller {
         stopButton.setDisable(false);
         resultLabel.setText("");
 
-        DivisorCounter counter = new DivisorCounter();
-        Result result = counter.calculate(minimum, maximum);
-        resultLabel.setText("The number " + result.getNumber() + " has " + result.getDivisorCounter() + " divisors!");
+        counter = new DivisorCounter();
+        counter.setMinimum(minimum);
+        counter.setMaximum(maximum);
+        counter.setOnRunning(e -> {
+            startButton.setDisable(true);
+            stopButton.setDisable(false);
+            txtMinimum.setDisable(true);
+            txtMaximum.setDisable(true);
+        });
 
-        progressBar.setProgress(1);
+        counter.messageProperty().addListener((obs, o, n) -> {
+            progressLabel.setText(n);
+        });
+
+        counter.progressProperty().addListener((obs, o, n) -> {
+            progressBar.setProgress((double)n);
+        });
+
+        counter.valueProperty().addListener((obs, o, n) -> {
+            resultLabel.setText("The number " + n.getNumber() + " has " + n.getDivisorCounter() + " divisors!");
+        });
+
+        counter.setOnCancelled(e -> {
+            resetUI();
+        });
+
+        counter.setOnSucceeded(e -> {
+            resetUI();
+        });
+
+        ExecutorService es = Executors.newSingleThreadExecutor();
+        es.submit(counter);
+        es.shutdown();
+    }
+
+    @FXML
+    public void stop()
+    {
+        counter.cancel(true);
+    }
+
+    private void resetUI(){
         startButton.setDisable(false);
         stopButton.setDisable(true);
+        txtMinimum.setDisable(false);
+        txtMaximum.setDisable(false);
     }
 }
 
